@@ -1,0 +1,160 @@
+{
+  "version-generated": 1,
+  "version-minimum": 1,
+  "items": {
+    "source": {
+      "type": "directory",
+      "name": "source",
+      "relative-path": "source",
+      "directories": {},
+      "files": {
+        "flickery.h": {
+          "type": "file",
+          "name": "flickery.h",
+          "relative-path": "source/flickery.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "relib": {
+          "type": "file",
+          "name": "relib",
+          "relative-path": "source/relib",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": null,
+          "source-analysis-type": null,
+          "source-analysis-mode": null
+        },
+        "arduous": {
+          "type": "file",
+          "name": "arduous",
+          "relative-path": "../shared/arduous",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": null,
+          "source-analysis-type": null,
+          "source-analysis-mode": null
+        },
+        "scani2c.h": {
+          "type": "file",
+          "name": "scani2c.h",
+          "relative-path": "../shared/scani2c.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        ".gitignore": {
+          "type": "file",
+          "name": ".gitignore",
+          "relative-path": "source/.gitignore",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": null,
+          "source-analysis-type": null,
+          "source-analysis-mode": null
+        },
+        "chainprinter.h": {
+          "type": "file",
+          "name": "chainprinter.h",
+          "relative-path": "../shared/chainprinter.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "cheaptricks.h": {
+          "type": "file",
+          "name": "cheaptricks.h",
+          "relative-path": "../shared/ezcpp/cheaptricks.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "eztypes.h": {
+          "type": "file",
+          "name": "eztypes.h",
+          "relative-path": "../shared/ezcpp/oldeztypes.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "lardls": {
+          "type": "file",
+          "name": "lardls",
+          "relative-path": "../shared/lardls",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": null,
+          "source-analysis-type": null,
+          "source-analysis-mode": null
+        },
+        "millievent.h": {
+          "type": "file",
+          "name": "millievent.h",
+          "relative-path": "../shared/millievent.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "millievent.cpp": {
+          "type": "file",
+          "name": "millievent.cpp",
+          "relative-path": "../shared/millievent.cpp",
+          "source-analysis-status-file": 0,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": null,
+          "source-analysis-type": "source",
+          "source-analysis-mode": null
+        },
+        "pcf8574.h": {
+          "type": "file",
+          "name": "pcf8574.h",
+          "relative-path": "../shared/pcf8574.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "wirewrapper.h": {
+          "type": "file",
+          "name": "wirewrapper.h",
+          "relative-path": "../shared/wirewrapper.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
+          "source-analysis-mode": null
+        },
+        "wirewrapper.cpp": {
+          "type": "file",
+          "name": "wirewrapper.cpp",
+          "relative-path": "../shared/wirewrapper.cpp",
+          "source-analysis-status-file": 0,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": null,
+          "source-analysis-type": "source",
+          "source-analysis-mode": null
+        }
+      },
+      "source-analysis-status-file": 0,
+      "source-analysis-status-file-locked": false,
+      "source-analysis-status-hdir": 1,
+      "source-analysis-status-hdir-files": 0,
+      "source-analysis-status-hdir-manual": "force-included",
+      "source-analysis-mode": null
+    }
+  }
+}
