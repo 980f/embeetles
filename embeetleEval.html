@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>embeetleEval</title>
+  </head>
+  <body>
+    <h2>Embeetle evaluation</h2>
+    <p>Starting with Arduino import is probably the most pessimistic evaluation possible!</p>
+    <ol>
+      <li>Arduino import issues</li>
+      <ol>
+        <li>reified links, disrupting my system for sharing source files between sketches. This can be a non-issue if sharing is easy to establish with beetles.</li>
+        <li>Did not connect to hardware tools includes, <code>Arduino.h</code> not found, <code>Wire.h</code> not found when compiling files other than the <code>.ino</code>.</li>
+        <li>Copied extra files, which was explained to me as "better to copy unneeded stuff than leave needed stuff out". I will share my understanding of the Arduino build with them, there should not be any uncertainty.</li>
+        <li>did crlf conversion, that should be conditional as the files might be shared with a system that needs them.</li>
+        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect.</li>
+        <li><br>
+        </li>
+      </ol>
+      <li>Devices</li>
+      <ol>
+        <li>Missing my preferred AVR chip, ATMega32Uxx as used on Leonardo and Pro Micro boards, the latter being what I use most of AVR's. I can understand that adding a device that needs a new toolset and support libraries is not something to support customers doing (yet), another member of a family that at most needs a pin definition and a few 'device drivers' should be within range of letting customers provide.</li>
+        <li>ESP32's are getting to be important, ESP-NOW is great for coordinating special effects, compared to using wires which people can see, break, and can pick up energy and blow up circuits (had a cannon firing off at random, apparently due to a fog machine glitching power).</li>
+        <li>Arduino's system can bemimickedor directly used, it is annoying at times but it works and is supported by a large community.</li>
+      </ol>
+      <li>Serial Port selector</li>
+      <ol>
+        <li>on linux(Ubuntu) there are 32 ttyS*'s even though it is extremely rare for those to be actual serial ports these days. We should be able to filter these out, or at least collapse numbers ones by prefix, such as collapsing ttyUSB's or ttyACM's (in my case ttyUSB's are FTDI usb-uarts and ttyACM's are microcontrollers with usb builtin and CDC enabled.</li>
+      </ol>
+      <li>VCS files to save</li>
+      <ol>
+        <li>.beetle</li>
+        <ol>
+          <li>buttons.btl (your customizations of the UI)</li>
+          <li>filetree_config.btl&nbsp; (your overrides of the automatic include/exclude logic)</li>
+          <li>dashboard_config.btl (recoverable, but tedious to do so)</li>
+        </ol>
+        <li>config</li>
+        <ol>
+          <li>makefile</li>
+          <li>dashboard.mk</li>
+          <li>linkerscript</li>
+          <li>maybe .gdbinit</li>
+          <li>maybe openocd*, although I am likely to link to files in the openocd distro so as to get updates when openocd itself is updated.</li>
+          <li>maybe pyocd_config.yaml</li>
+        </ol>
+      </ol>
+      <li>General</li>
+      <ol>
+        <li>'toggleblock comment' does nothing, not from menu nor ctrl-shift-C</li>
+        <li>"Why the circle icon" does nothing, leaves cursor one file below the one that was clicked on.</li>
+        <li>When I put all my source files other than the .ino outside the tree with links to them from inside the tree I get empty file lists. The reasonable criterion of "zip collects all the files needed to reproduce the program" is not invalidated by honoring links. Don't exclude links when scanning for files to compile, don't even check if they are links. The zip utilities I know about require an explicit cli arg to store links as links rather than zipping in the file targeted by the link.</li>
+        <li>my gnu make is 4.3, embeetle wants to install 4.2.1, it should not be that picky.</li>
+        <li><br>
+        </li>
+      </ol>
+    </ol>
+    <br>
+  </body>
+</html>
