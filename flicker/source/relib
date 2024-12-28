@@ -1,0 +1,14 @@
+## recreate links to library sources
+ln -sf /r/work/beetles/shared/ lib
+ln -sf lib/arduous
+ln -sf lib/chainprinter.h
+ln -sf lib/ezcpp/cheaptricks.h
+ln -sf lib/ezcpp/eztypes.h
+ln -sf lib/flickery.h
+ln -sf lib/lardls
+ln -sf lib/millievent.cpp
+ln -sf lib/millievent.h
+ln -sf lib/pcf8574.h
+ln -sf lib/scani2c.h
+ln -sf lib/wirewrapper.cpp
+ln -sf lib/wirewrapper.h
