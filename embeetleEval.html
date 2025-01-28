@@ -14,7 +14,7 @@
         <li>Did not connect to hardware tools includes, <code>Arduino.h</code> not found, <code>Wire.h</code> not found when compiling files other than the <code>.ino</code>.</li>
         <li>Copied extra files, which was explained to me as "better to copy unneeded stuff than leave needed stuff out". I will share my understanding of the Arduino build with them, there should not be any uncertainty.</li>
         <li>did crlf conversion, that should be conditional as the files might be shared with a system that needs them.</li>
-        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect.</li>
+        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect. </li>
         <li><br>
         </li>
       </ol>
@@ -22,13 +22,13 @@
       <ol>
         <li>Missing my preferred AVR chip, ATMega32Uxx as used on Leonardo and Pro Micro boards, the latter being what I use most of AVR's. I can understand that adding a device that needs a new toolset and support libraries is not something to support customers doing (yet), another member of a family that at most needs a pin definition and a few 'device drivers' should be within range of letting customers provide.</li>
         <li>ESP32's are getting to be important, ESP-NOW is great for coordinating special effects, compared to using wires which people can see, break, and can pick up energy and blow up circuits (had a cannon firing off at random, apparently due to a fog machine glitching power).</li>
-        <li>Arduino's system can bemimickedor directly used, it is annoying at times but it works and is supported by a large community.</li>
+        <li>Arduino's system can be mimicked or directly used, it is annoying at times but it works and is supported by a large community.</li>
       </ol>
       <li>Serial Port selector</li>
       <ol>
-        <li>on linux(Ubuntu) there are 32 ttyS*'s even though it is extremely rare for those to be actual serial ports these days. We should be able to filter these out, or at least collapse numbers ones by prefix, such as collapsing ttyUSB's or ttyACM's (in my case ttyUSB's are FTDI usb-uarts and ttyACM's are microcontrollers with usb builtin and CDC enabled.</li>
+        <li>on linux(Ubuntu) there are 32 ttyS*'s even though it is extremely rare for those to be actual serial ports these days. We should be able to filter these out, or at least collapse them by prefix, such as collapsing ttyUSB's or ttyACM's (in my case ttyUSB's are FTDI usb-uarts and ttyACM's are microcontrollers with usb builtin and CDC enabled.</li>
       </ol>
-      <li>VCS files to save</li>
+      <li>VCS files to save, would be nice if this were documented somewhere obvious, such as a .gitignore in the .beetles folder</li>
       <ol>
         <li>.beetle</li>
         <ol>
@@ -52,8 +52,117 @@
         <li>"Why the circle icon" does nothing, leaves cursor one file below the one that was clicked on.</li>
         <li>When I put all my source files other than the .ino outside the tree with links to them from inside the tree I get empty file lists. The reasonable criterion of "zip collects all the files needed to reproduce the program" is not invalidated by honoring links. Don't exclude links when scanning for files to compile, don't even check if they are links. The zip utilities I know about require an explicit cli arg to store links as links rather than zipping in the file targeted by the link.</li>
         <li>my gnu make is 4.3, embeetle wants to install 4.2.1, it should not be that picky.</li>
-        <li><br>
-        </li>
+        <li>switching MCU failed</li>
+        <ol>
+          <li>when inspecting diff of one of the config files I got an offer to quit the application, after that I could not reopen the diff link (the one labeled with %difference)</li>
+          <li>I already had arm_gcc_13 on my computer, having an option to link to it would be nice. I OK'd the download and it failed with <br>
+            <pre>ERROR: An unexpected error occurred Traceback (most recent call last):
+              File "/data/embeetle_dist-pyqt6/linux/embeetle/copied_embeetle/beetle_console/mini_console.py", line 1148, in download
+              File "/data/embeetle_dist-pyqt6/linux/embeetle/copied_embeetle/serverfunctions.py", line 107, in urlretrieve_beetle
+              File "/data/embeetle_dist-pyqt6/linux/embeetle/copied_embeetle/purefunctions.py", line 1783, in printc
+              ValueError: I/O operation on closed file.</pre>
+          </li>
+          <li> ditto when trying to download an openocd for the flasher tool. I already had it on my system, in the PATH but I thought I'd go ahead and download one of your sanctioned versions. <br>
+            Note: sorting the open_ocd list would be nice. </li>
+          <li>X'ed out of the application (losing changes) reentered and tried again and things went smoother this time, however I had linked my download of gcc_arm 13.3 in the path you expected and that wasn't good enough for you. When I authorized downloading yours it failed at trying to remove my link:<br>
+            <pre>----------------------------------
+|          DOWNLOAD TOOL         |
+----------------------------------
+Clean folder: /r/bin/embeetle/beetle_tools/linux/gnu_arm_toolchain_13.3.1_20240614_64b
+
+ERROR: Cannot clean '/r/bin/embeetle/beetle_tools/linux/gnu_arm_toolchain_13.3.1_20240614_64b'
+Traceback (most recent call last):
+  File "/data/embeetle_dist-pyqt6/linux/embeetle/copied_embeetle/bpathlib/file_power.py", line 931, in clean_dir
+  File "/data/embeetle_dist-pyqt6/linux/embeetle/copied_embeetle/bpathlib/file_power.py", line 1818, in delete
+  File "/data/embeetle_dist-pyqt6/linux/embeetle/copied_embeetle/bpathlib/file_power.py", line 1738, in delete_dir
+  File "/opt/_internal/cpython-3.12.1/lib/python3.12/shutil.py", line 790, in rmtree
+  File "/opt/_internal/cpython-3.12.1/lib/python3.12/shutil.py", line 788, in rmtree
+OSError: Cannot call rmtree on a symbolic link
+
+
+
+An error occured while downloading the tool.   
+Please copy-paste the contents of this console,
+and mail it to:
+info@embeetle.com </pre>
+          </li>
+          <li> I erased my handiwork and the download worked this time.</li>
+          <li>open_ocd download succeeded, config files updated, but Tools and Flashtool are still in red.</li>
+          <li>got "std=gnu11' not allowed with 'C++', so for some reason despite files being named C++ embeetle tried a C compile. Also failed to wrap the .ino and compile it leaving unresolved symbols such as <code>main</code>.<br>
+            <span style="color: red;">Resolved: is in TARGET_COMMONFLAGS but should be in TARGET_CFLAGS. </span>I moved that and added an std to the c++ section.</li>
+          <li>while editing dashboard.mk for the 'std in wrong place' bug the editor automatically converted leading spaces into leading tabs upon backspace key, a bad idea for makefiles.</li>
+          <li>linkerscript:</li>
+          <ol>
+            <li>there are segments never present for cortexM parts</li>
+            <li>missing SORTs without which the init priority stuff of gcc seems to not work.</li>
+            <li>I also did not see ctors nor dtors segments, as if this was a C only linker script (which would agree with the wrong placement of std=gnu11). AC6 is one of the ide's that I never got a download with due to being too damn irritated with it.</li>
+            <li>I have some additions that might be useful for all of your customers, for pushing more things into ROM that otherwise are inconvenient to keep out of ram.</li>
+          </ol>
+          <li><span style="color: #6600cc;">after good compile and link the Diagnostics window still had errors from previous attempt.</span></li>
+        </ol>
+        <li>New project </li>
+        <ol>
+          <li>with just one project template it was not obvious that I needed to click somewhere on the line in the table. Autopicking if there is only one is reasonable, having a column just for clicking also works.</li>
+          <li>main.c was under Src under Core under Source, when I would have expected it to be at Source. I will be generating my own template as every time I have used ST stuff I have found bugs, often serious ones. I also write c++ and find the verbosity of the HAL rather stultifying compared to how simple a c++ hal would be.</li>
+          <li>template folder has files for all base types of cortexM, rather than being filtered for the processor selected. </li>
+          <li>I haven't tried CMSIS since v3 where it couldn't even get uart baud rate correct. Somebody read the bizarre description of the "fractional baud rate generator" instead of paying attention only to the algebra for setting the register, and got some decimal logic mixed in with something that is purely binary.</li>
+          <li>I will be emptying most of the project out, but it is nice having a makefile to start with.<br>
+            <em>started fresh due to wanting to test with a different board, also upgraded to 1.13.1<br>
+            </em></li>
+          <li>create project dialog ignores maximize window control, also F12<br>
+          </li>
+          <li>creation is slow enough that since dialog closed and Home window got focus I selected my Recent project and got a 2nd window. <br>
+          </li>
+          <li>probably a HAL issue: linker complains about all the filesystem pieces being missing, this is a microcontroller and doesn't have a unix-style IO system! Seriously, "getpid? isatty? kill? lseek? fd based read and write? Aha! --gc-sections has been asked for but the missing parts warnings are issued due to some unnecessary reference in libc_nano, and what appears to be multithreaded link execution gets the error messages out of order so the message that a pointless warning has been issued is not following the pointless message it is referring to.&nbsp; libc_nano has some issues that other microcontroller libc's have faced and solved.</li>
+          <li>the guidance on cputapid was good, save for the noted issue of the editor inserting tabs into a makefile when spaces are (most likely) necessary.</li>
+          <li>question on above: if we are feeding the cputapid in via commandline why do you also have us edit the same value into the local config file?</li>
+          <li>Blinky example suggestion: use significantly different times, such as 250 and 750, so that people can readily detect whether a 1 versus a 0 actually turns the LED on.</li>
+        </ol>
+        <li>libraries</li>
+        <ol>
+          <li>&nbsp;dialog has blank 3rd entry. </li>
+          <li>warning about source/libraries not existing </li>
+          <ol>
+            <li>didn't pick up when I created it outside the IDE </li>
+            <li>didn't notice when I used the 'create' button in the IDE</li>
+            <li>did catch up when I selected it from the finder dialog.</li>
+          </ol>
+          <li>t'would be nice to have a filter by architecture</li>
+        </ol>
+        <li>"Update available" balloon notifying of v1.13.1 launched page with vacuous 1.10 release notes.</li>
+        <li>I do like that you do not hide things like the updater execution.</li>
+        <li>debugging</li>
+        <ol>
+          <li>ergonomics: function keys for step in/out/over etc. are essential, the debug toolbar is nowhere near the source file cursor so my eyes had to swing back and forth to make sure I was hitting the correct icon according to which line I was sitting on. </li>
+          <li>read-only on the source file: This is a big problem, and I've dealt with more than a few IDE's over the years that try this. <span
+              style="color: red;">IT IS A DEAL BREAKER!</span> I understand the reasons for it but absolutely need to be able to opt-out of it to make the debug session useful. I need to fix things or annotate the fixes as I find things, and I understand and accept that I can easily break the correlation between the source file and the debug info. I can deal with occasional loss of correlation between source and debug info a heckuva lot better than I can try to make notes of what to change once I drop out of debug mode.Even having to acknowledge overriding the read-only every debug session rapidly became infuriating, it felt like I was banging my shins each time I tried to take a step forward.<br>
+            <span style="color: red;">So, since you are already popping up a notification that you are ignoring edits due to debug being active, you can pop up a dialog which offers per project or global permission to not slap me in the face while I am trying to get the hardest part of software engineering work done.</span></li>
+          <li>I tried to restart debugging after making a fix and rather than pushing or automatically building and flashing you note that the source would be out of sync. I would make DEBUG a make target.</li>
+          <li>Having to have debug running to set breakpoints is very annoying. I like to set them before starting the debug session.</li>
+          <li>It seems that the processor must be paused for the IDE to acknowledge a breakpoint has been set. </li>
+          <li>The IDE can flash the line of code where the breakpoint is when I click on the breakpoint definition, but doesn't reliably have the icon in the gutter/margin.</li>
+          <li>Debug session is stuck on the "Not flashed" error notification. Closing the window didn't make that go away, and the window came back in a different part of the screen than it was last opened. See next item. Reconnecting the debugger cleared the error, but it should be cleared when the window is reopened, or when I do flash the part. The lingering error message caused me time poking around wondering what else I needed to do to make the debug page willing to do what I want. Uh, the error message still lingers, it just hid for a little bit.<br>
+            <strong>LATER</strong>: <em>actually the flashing was failing but since it always falsely reports failure when the final target reset doesn't work I wasn't seeing it. I have to stroke the hardware reset at just the right time to get the device to flash, that should not be necessary with a SWD debug connection. See next item. </em>The success of the actual download and verify should be somehow detected, and you shouldn't trust just the exec's return value since openOCD scripting can execute other actions after the download and not all matter.<em><br>
+            </em></li>
+          <li>Often the debug probe will not have a direct hardware reset connection to the processor. SWD seems to have access so long as its pins haven't been taken over by the application, and you can reset STM32's via the AIRC register, see next item.</li>
+          <li>Potential feature: the stm32 family (at least all the ones I have used or considered using) have a memory mapped register (AIRC) that has a bit in it which generates a physical hardware reset, some of them actually drive their hardware reset pin low. Not all debug probes are connected to the physical reset, this facility of ST's allows you to do hard resets via memory access.Being able to configure that and pass it on somehow to the flashing tool would help tremendously. OpenOCD is open source ... and I guess you are using a different implementation language as integrating its source into your app rather than launching and talking over a socket seems like it would lead to much better behavior, perhaps totally bypassing the need for gdb.</li>
+          <li>The Debug window needs to not share the source code editor frame. If I move it to a different tile group it should reopen in that group not go back to the original rather anti-egonomic position of not letting you see the source that you are debugging.</li>
+          <li>My breakpoints were lost due to an edit which only changed some function call values. That is unkind. A best effort of keeping the breakpoint with the lines is worth it, minor imperfections would be more tolerable than having to redo the breakpoints before each session. </li>
+          <li>Breakpoint setting does not reliably produce an icon in the gutter. I clicked 3 times and saw nothing, checked the breakpoint listing in the debug tab and saw 3 breakpoints on the same line. Deduping breakpoints makes a lot of sense. Getting the state indicator right would also be very good.</li>
+          <li>General register view</li>
+          <ol>
+            <li>d0,d1,d10,d11, ...d19, d2, d3 ... need I detail why that is annoying?</li>
+            <li>The FP registers are mixed in with the CPU and special control registers</li>
+            <li>the interrupt control registers need to be grouped together</li>
+            <li>in general without grouping the display is rather awkward to use, quite unprofessional. </li>
+            <li>The [register names] stuff in the window tracing gdb actions shows layout information that looks like it would make for a decent display. You are dropping all the spacers that are present in that view.,</li>
+            <li>I needed access to the memory for the GPIO controls, and see no provision for that. Customers need to be able to define their own register sets. I think there are open source SVD files.</li>
+            <li>I couldn't find assembly window, to step through the actual binary to see what actual values are going to which actual addresses.</li>
+            <li>I have to stop here as I can't debug why a nominally simple LED toggle program isn't affecting a GPIO pin, I need to see the gpio hardware control registers to debug that properly.</li>
+          </ol>
+        </ol>
+        <ol>
+        </ol>
       </ol>
     </ol>
     <br>
