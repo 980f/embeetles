@@ -1,264 +1,217 @@
-/* Script for -n: mix text and data on same page */
-/* Copyright (C) 2014-2015 Free Software Foundation, Inc.
-   Copying and distribution of this script, with or without modification,
-   are permitted in any medium without royalty provided the copyright
-   notice and this notice are preserved.  */
-OUTPUT_FORMAT("elf32-avr","elf32-avr","elf32-avr")
-OUTPUT_ARCH(avr:5)
-__TEXT_REGION_LENGTH__ = DEFINED(__TEXT_REGION_LENGTH__) ? __TEXT_REGION_LENGTH__ : 128K;
-__DATA_REGION_LENGTH__ = DEFINED(__DATA_REGION_LENGTH__) ? __DATA_REGION_LENGTH__ : 0xffa0;
-__EEPROM_REGION_LENGTH__ = DEFINED(__EEPROM_REGION_LENGTH__) ? __EEPROM_REGION_LENGTH__ : 64K;
-__FUSE_REGION_LENGTH__ = DEFINED(__FUSE_REGION_LENGTH__) ? __FUSE_REGION_LENGTH__ : 1K;
-__LOCK_REGION_LENGTH__ = DEFINED(__LOCK_REGION_LENGTH__) ? __LOCK_REGION_LENGTH__ : 1K;
-__SIGNATURE_REGION_LENGTH__ = DEFINED(__SIGNATURE_REGION_LENGTH__) ? __SIGNATURE_REGION_LENGTH__ : 1K;
-__USER_SIGNATURE_REGION_LENGTH__ = DEFINED(__USER_SIGNATURE_REGION_LENGTH__) ? __USER_SIGNATURE_REGION_LENGTH__ : 1K;
-__DATA_REGION_ORIGIN__ = DEFINED(__DATA_REGION_ORIGIN__) ? __DATA_REGION_ORIGIN__ : 0x800060;
+/*
+********************************************************************************
+**                                                                            **
+**                    LINKERSCRIPT FOR 'stm32f103c8'
+**                                                                            **
+********************************************************************************
+** Please consult the COPYRIGHT(c) notice at the bottom of the file.
+**
+*/
+
+/* Entry Point */
+ENTRY(Reset_Handler)
+
+/* Highest address of the user mode stack */
+_estack = 0x20005000;    /* end of RAM */
+/* Generate a link error if heap and stack don't fit into RAM */
+_Min_Heap_Size = 0x200;      /* required amount of heap  */
+_Min_Stack_Size = 0x400;    /* required amount of stack */
+
+/* Define memory regions. */
 MEMORY
 {
-  text            (rx)   : ORIGIN = 0,                      LENGTH = __TEXT_REGION_LENGTH__
-  data            (rw!x) : ORIGIN = __DATA_REGION_ORIGIN__, LENGTH = __DATA_REGION_LENGTH__
-  eeprom          (rw!x) : ORIGIN = 0x810000,               LENGTH = __EEPROM_REGION_LENGTH__
-  fuse            (rw!x) : ORIGIN = 0x820000,               LENGTH = __FUSE_REGION_LENGTH__
-  lock            (rw!x) : ORIGIN = 0x830000,               LENGTH = __LOCK_REGION_LENGTH__
-  signature       (rw!x) : ORIGIN = 0x840000,               LENGTH = __SIGNATURE_REGION_LENGTH__
-  user_signatures (rw!x) : ORIGIN = 0x850000,               LENGTH = __USER_SIGNATURE_REGION_LENGTH__
+    FLASH (rx): ORIGIN = 0x08000000, LENGTH = 64K
+    RAM (xrw): ORIGIN = 0x20000000, LENGTH = 20K
+
 }
+
+/* Define output sections */
 SECTIONS
 {
-  /* Read-only sections, merged into text segment: */
-  .hash          : { *(.hash) }
-  .dynsym        : { *(.dynsym) }
-  .dynstr        : { *(.dynstr) }
-  .gnu.version   : { *(.gnu.version) }
-  .gnu.version_d : { *(.gnu.version_d) }
-  .gnu.version_r : { *(.gnu.version_r) }
-  .rel.init      : { *(.rel.init)		}
-  .rela.init     : { *(.rela.init)	}
-  .rel.text      :
+    /* The startup code goes first into FLASH */
+    .isr_vector :
     {
-      *(.rel.text)
-      *(.rel.text.*)
-      *(.rel.gnu.linkonce.t*)
-    }
-  .rela.text     :
+        . = ALIGN(8);
+        KEEP(*(.isr_vector)) /* Startup code */
+        . = ALIGN(8);
+    } >FLASH
+
+    /* The program code and other data goes into FLASH */
+    .text :
     {
-      *(.rela.text)
-      *(.rela.text.*)
-      *(.rela.gnu.linkonce.t*)
-    }
-  .rel.fini   : { *(.rel.fini)  }
-  .rela.fini  : { *(.rela.fini) }
-  .rel.rodata :
+        . = ALIGN(8);
+        *(.text)           /* .text sections (code) */
+        *(.text*)          /* .text* sections (code) */
+        *(.glue_7)         /* glue arm to thumb code */
+        *(.glue_7t)        /* glue thumb to arm code */
+        *(.eh_frame)
+
+        KEEP (*(.init))
+        KEEP (*(.fini))
+
+        . = ALIGN(8);
+        _etext = .;        /* define a global symbols at end of code */
+    } >FLASH
+
+    /* Constant data goes into FLASH */
+    .rodata :
     {
-      *(.rel.rodata)
-      *(.rel.rodata.*)
-      *(.rel.gnu.linkonce.r*)
-    }
-  .rela.rodata :
+        . = ALIGN(8);
+        *(.rodata)         /* .rodata sections (constants, strings, etc.) */
+        *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+        . = ALIGN(8);
+    } >FLASH
+
+    .ARM.extab :
     {
-      *(.rela.rodata)
-      *(.rela.rodata.*)
-      *(.rela.gnu.linkonce.r*)
-    }
-  .rel.data :
+        . = ALIGN(8);
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+        . = ALIGN(8);
+    } >FLASH
+
+    .ARM : {
+        . = ALIGN(8);
+        __exidx_start = .;
+        *(.ARM.exidx*)
+        __exidx_end = .;
+        . = ALIGN(8);
+    } >FLASH
+
+    .preinit_array :
     {
-      *(.rel.data)
-      *(.rel.data.*)
-      *(.rel.gnu.linkonce.d*)
-    }
-  .rela.data :
+        . = ALIGN(8);
+        PROVIDE_HIDDEN (__preinit_array_start = .);
+        KEEP (*(.preinit_array*))
+        PROVIDE_HIDDEN (__preinit_array_end = .);
+        . = ALIGN(8);
+    } >FLASH
+
+    .init_array :
     {
-      *(.rela.data)
-      *(.rela.data.*)
-      *(.rela.gnu.linkonce.d*)
+        . = ALIGN(8);
+        PROVIDE_HIDDEN (__init_array_start = .);
+        KEEP (*(SORT(.init_array.*)))
+        KEEP (*(.init_array*))
+        PROVIDE_HIDDEN (__init_array_end = .);
+        . = ALIGN(8);
+    } >FLASH
+
+    .fini_array :
+    {
+        . = ALIGN(8);
+        PROVIDE_HIDDEN (__fini_array_start = .);
+        KEEP (*(SORT(.fini_array.*)))
+        KEEP (*(.fini_array*))
+        PROVIDE_HIDDEN (__fini_array_end = .);
+        . = ALIGN(8);
+    } >FLASH
+
+    /* used by the startup to initialize data */
+    _sidata = LOADADDR(.data);
+
+    /* Initialized data sections goes into RAM, load LMA copy after code */
+    .data :
+    {
+        . = ALIGN(8);
+        _sdata = .;        /* create a global symbol at data start */
+        *(.data)           /* .data sections */
+        *(.data*)          /* .data* sections */
+        *(.RamFunc)        /* .RamFunc sections */
+        *(.RamFunc*)       /* .RamFunc* sections */
+
+
+        . = ALIGN(8);
+        _edata = .;        /* define a global symbol at data end */
+    } >RAM AT> FLASH
+
+    /* Uninitialized data section */
+    . = ALIGN(8);
+    .bss :
+    {
+        /* This is used by the startup in order to initialize the .bss section */
+        _sbss = .;         /* define a global symbol at bss start */
+        __bss_start__ = _sbss;
+        *(.bss)
+        *(.bss*)
+        *(COMMON)
+
+        . = ALIGN(8);
+        _ebss = .;         /* define a global symbol at bss end */
+        __bss_end__ = _ebss;
+    } >RAM
+
+    /* User_heap_stack section, used to check that there is enough RAM left */
+    ._user_heap_stack :
+    {
+        . = ALIGN(8);
+        PROVIDE ( end = . );
+        PROVIDE ( _end = . );
+        . = . + _Min_Heap_Size;
+        . = . + _Min_Stack_Size;
+        . = ALIGN(8);
+    } >RAM
+
+    /* Remove information from the standard libraries */
+    /DISCARD/ :
+    {
+        libc.a ( * )
+        libm.a ( * )
+        libgcc.a ( * )
     }
-  .rel.ctors     : { *(.rel.ctors)  }
-  .rela.ctors    : { *(.rela.ctors) }
-  .rel.dtors     : { *(.rel.dtors)  }
-  .rela.dtors    : { *(.rela.dtors) }
-  .rel.got       : { *(.rel.got)    }
-  .rela.got      : { *(.rela.got)   }
-  .rel.bss       : { *(.rel.bss)    }
-  .rela.bss      : { *(.rela.bss)   }
-  .rel.plt       : { *(.rel.plt)    }
-  .rela.plt      : { *(.rela.plt)   }
-  /* Internal text space or external memory.  */
-  .text :
-  {
-    *(.vectors)
-    KEEP(*(.vectors))
-    /* For data that needs to reside in the lower 64k of progmem.  */
-     *(.progmem.gcc*)
-    /* PR 13812: Placing the trampolines here gives a better chance
-       that they will be in range of the code that uses them.  */
-    . = ALIGN(2);
-     __trampolines_start = . ;
-    /* The jump trampolines for the 16-bit limited relocs will reside here.  */
-    *(.trampolines)
-     *(.trampolines*)
-     __trampolines_end = . ;
-    /* avr-libc expects these data to reside in lower 64K. */
-     *libprintf_flt.a:*(.progmem.data)
-     *libc.a:*(.progmem.data)
-     *(.progmem*)
-    . = ALIGN(2);
-    /* For future tablejump instruction arrays for 3 byte pc devices.
-       We don't relax jump/call instructions within these sections.  */
-    *(.jumptables)
-     *(.jumptables*)
-    /* For code that needs to reside in the lower 128k progmem.  */
-    *(.lowtext)
-     *(.lowtext*)
-     __ctors_start = . ;
-     *(.ctors)
-     __ctors_end = . ;
-     __dtors_start = . ;
-     *(.dtors)
-     __dtors_end = . ;
-    KEEP(SORT(*)(.ctors))
-    KEEP(SORT(*)(.dtors))
-    /* From this point on, we don't bother about wether the insns are
-       below or above the 16 bits boundary.  */
-    *(.init0)  /* Start here after reset.  */
-    KEEP (*(.init0))
-    *(.init1)
-    KEEP (*(.init1))
-    *(.init2)  /* Clear __zero_reg__, set up stack pointer.  */
-    KEEP (*(.init2))
-    *(.init3)
-    KEEP (*(.init3))
-    *(.init4)  /* Initialize data and BSS.  */
-    KEEP (*(.init4))
-    *(.init5)
-    KEEP (*(.init5))
-    *(.init6)  /* C++ constructors.  */
-    KEEP (*(.init6))
-    *(.init7)
-    KEEP (*(.init7))
-    *(.init8)
-    KEEP (*(.init8))
-    *(.init9)  /* Call main().  */
-    KEEP (*(.init9))
-    *(.text)
-    . = ALIGN(2);
-     *(.text.*)
-    . = ALIGN(2);
-    *(.fini9)  /* _exit() starts here.  */
-    KEEP (*(.fini9))
-    *(.fini8)
-    KEEP (*(.fini8))
-    *(.fini7)
-    KEEP (*(.fini7))
-    *(.fini6)  /* C++ destructors.  */
-    KEEP (*(.fini6))
-    *(.fini5)
-    KEEP (*(.fini5))
-    *(.fini4)
-    KEEP (*(.fini4))
-    *(.fini3)
-    KEEP (*(.fini3))
-    *(.fini2)
-    KEEP (*(.fini2))
-    *(.fini1)
-    KEEP (*(.fini1))
-    *(.fini0)  /* Infinite loop after program termination.  */
-    KEEP (*(.fini0))
-     _etext = . ;
-  } > text
-  .data :
-  {
-     PROVIDE (__data_start = .) ;
-    *(.data)
-     *(.data*)
-    *(.gnu.linkonce.d*)
-    *(.rodata)  /* We need to include .rodata here if gcc is used */
-     *(.rodata*) /* with -fdata-sections.  */
-    *(.gnu.linkonce.r*)
-    . = ALIGN(2);
-     _edata = . ;
-     PROVIDE (__data_end = .) ;
-  }  > data AT> text
-  .bss  ADDR(.data) + SIZEOF (.data)   : AT (ADDR (.bss))
-  {
-     PROVIDE (__bss_start = .) ;
-    *(.bss)
-     *(.bss*)
-    *(COMMON)
-     PROVIDE (__bss_end = .) ;
-  }  > data
-   __data_load_start = LOADADDR(.data);
-   __data_load_end = __data_load_start + SIZEOF(.data);
-  /* Global data not cleared after reset.  */
-  .noinit  ADDR(.bss) + SIZEOF (.bss)  :  AT (ADDR (.noinit))
-  {
-     PROVIDE (__noinit_start = .) ;
-    *(.noinit*)
-     PROVIDE (__noinit_end = .) ;
-     _end = . ;
-     PROVIDE (__heap_start = .) ;
-  }  > data
-  .eeprom  :
-  {
-    /* See .data above...  */
-    KEEP(*(.eeprom*))
-     __eeprom_end = . ;
-  }  > eeprom
-  .fuse  :
-  {
-    KEEP(*(.fuse))
-    KEEP(*(.lfuse))
-    KEEP(*(.hfuse))
-    KEEP(*(.efuse))
-  }  > fuse
-  .lock  :
-  {
-    KEEP(*(.lock*))
-  }  > lock
-  .signature  :
-  {
-    KEEP(*(.signature*))
-  }  > signature
-  .user_signatures  :
-  {
-    KEEP(*(.user_signatures*))
-  }  > user_signatures
-  /* Stabs debugging sections.  */
-  .stab 0 : { *(.stab) }
-  .stabstr 0 : { *(.stabstr) }
-  .stab.excl 0 : { *(.stab.excl) }
-  .stab.exclstr 0 : { *(.stab.exclstr) }
-  .stab.index 0 : { *(.stab.index) }
-  .stab.indexstr 0 : { *(.stab.indexstr) }
-  .comment 0 : { *(.comment) }
-  .note.gnu.build-id : { *(.note.gnu.build-id) }
-  /* DWARF debug sections.
-     Symbols in the DWARF debugging sections are relative to the beginning
-     of the section so we begin them at 0.  */
-  /* DWARF 1 */
-  .debug          0 : { *(.debug) }
-  .line           0 : { *(.line) }
-  /* GNU DWARF 1 extensions */
-  .debug_srcinfo  0 : { *(.debug_srcinfo) }
-  .debug_sfnames  0 : { *(.debug_sfnames) }
-  /* DWARF 1.1 and DWARF 2 */
-  .debug_aranges  0 : { *(.debug_aranges) }
-  .debug_pubnames 0 : { *(.debug_pubnames) }
-  /* DWARF 2 */
-  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
-  .debug_abbrev   0 : { *(.debug_abbrev) }
-  .debug_line     0 : { *(.debug_line .debug_line.* .debug_line_end ) }
-  .debug_frame    0 : { *(.debug_frame) }
-  .debug_str      0 : { *(.debug_str) }
-  .debug_loc      0 : { *(.debug_loc) }
-  .debug_macinfo  0 : { *(.debug_macinfo) }
-  /* SGI/MIPS DWARF 2 extensions */
-  .debug_weaknames 0 : { *(.debug_weaknames) }
-  .debug_funcnames 0 : { *(.debug_funcnames) }
-  .debug_typenames 0 : { *(.debug_typenames) }
-  .debug_varnames  0 : { *(.debug_varnames) }
-  /* DWARF 3 */
-  .debug_pubtypes 0 : { *(.debug_pubtypes) }
-  .debug_ranges   0 : { *(.debug_ranges) }
-  /* DWARF Extension.  */
-  .debug_macro    0 : { *(.debug_macro) }
+
+    .ARM.attributes 0 : { *(.ARM.attributes) }
+    
 }
+
+
+/*
+*****************************************************************************
+** This linkerscript is auto-generated by Embeetle (https://embeetle.com).
+** We have inspired our linkerscript template upon a collection of
+** linkerscripts from Ac6 (http://www.openstm32.org/HomePage), having the
+** following copyright notice:
+**
+** COPYRIGHT(c) 2014 Ac6
+**
+** Redistribution and use in source and binary forms, with or without modification,
+** are permitted provided that the following conditions are met:
+**   1. Redistributions of source code must retain the above copyright notice,
+**      this list of conditions and the following disclaimer.
+**   2. Redistributions in binary form must reproduce the above copyright notice,
+**      this list of conditions and the following disclaimer in the documentation
+**      and/or other materials provided with the distribution.
+**   3. Neither the name of Ac6 nor the names of its contributors
+**      may be used to endorse or promote products derived from this software
+**      without specific prior written permission.
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+** IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+** FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+** DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+** SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+** CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+** OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**
+*****************************************************************************
+** Concerning all the changes with respect to the original linkerscripts (the
+** ones from which we've taken inspiration), we apply the following copyright
+** notice:
+**
+** COPYRIGHT(c) 2023 Embeetle
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+** IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+** DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+** FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+** DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+** SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+** CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+** OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**
+*****************************************************************************
+*/

@@ -8,16 +8,6 @@
       "relative-path": "source",
       "directories": {},
       "files": {
-        "flickery.h": {
-          "type": "file",
-          "name": "flickery.h",
-          "relative-path": "source/flickery.h",
-          "source-analysis-status-file": null,
-          "source-analysis-status-file-manual": null,
-          "source-analysis-status-hdir": 0,
-          "source-analysis-type": "header",
-          "source-analysis-mode": null
-        },
         "relib": {
           "type": "file",
           "name": "relib",
@@ -146,6 +136,16 @@
           "source-analysis-status-file-manual": null,
           "source-analysis-status-hdir": null,
           "source-analysis-type": "source",
+          "source-analysis-mode": null
+        },
+        "flickery.h": {
+          "type": "file",
+          "name": "flickery.h",
+          "relative-path": "../shared/flickery.h",
+          "source-analysis-status-file": null,
+          "source-analysis-status-file-manual": null,
+          "source-analysis-status-hdir": 0,
+          "source-analysis-type": "header",
           "source-analysis-mode": null
         }
       },

@@ -6,7 +6,8 @@
   </head>
   <body>
     <h2>Embeetle evaluation</h2>
-    <p>Starting with Arduino import is probably the most pessimistic evaluation possible!</p>
+    <p>Starting with Arduino import is probably the most pessimistic evaluation possible!<br>
+      This eval started with 1.13.0, the debugger stuff was with 1.13.1</p>
     <ol>
       <li>Arduino import issues</li>
       <ol>
@@ -14,15 +15,13 @@
         <li>Did not connect to hardware tools includes, <code>Arduino.h</code> not found, <code>Wire.h</code> not found when compiling files other than the <code>.ino</code>.</li>
         <li>Copied extra files, which was explained to me as "better to copy unneeded stuff than leave needed stuff out". I will share my understanding of the Arduino build with them, there should not be any uncertainty.</li>
         <li>did crlf conversion, that should be conditional as the files might be shared with a system that needs them.</li>
-        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect. </li>
-        <li><br>
-        </li>
+        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect.Separate Inc and Src directories is a legacy of closed source development, a reflection of 'public' and 'private' concepts for source files.</li>
       </ol>
       <li>Devices</li>
       <ol>
-        <li>Missing my preferred AVR chip, ATMega32Uxx as used on Leonardo and Pro Micro boards, the latter being what I use most of AVR's. I can understand that adding a device that needs a new toolset and support libraries is not something to support customers doing (yet), another member of a family that at most needs a pin definition and a few 'device drivers' should be within range of letting customers provide.</li>
+        <li>Missing my preferred AVR chip, ATMega32Uxx as used on Leonardo and Pro Micro boards, the latter being what I use most of AVR's. I can understand that adding a new series that needs a new toolset and support libraries is not something to support customers doing (yet), another member of a family that at most needs a pin definition and a few 'device drivers' should be within range of letting customers provide.</li>
         <li>ESP32's are getting to be important, ESP-NOW is great for coordinating special effects, compared to using wires which people can see, break, and can pick up energy and blow up circuits (had a cannon firing off at random, apparently due to a fog machine glitching power).</li>
-        <li>Arduino's system can be mimicked or directly used, it is annoying at times but it works and is supported by a large community.</li>
+        <li>Arduino's system for tooling can be mimicked or directly used, it is annoying at times but it works and is supported by a large community.</li>
       </ol>
       <li>Serial Port selector</li>
       <ol>

@@ -52,8 +52,8 @@ EMBEETLE_MAKEFILE_INTERFACE_VERSION = 7
 # If you ever invoke the makefile without these commandline-arguments,
 # you need a fallback mechanism. Therefore, we provide a default value
 # for these variables here. Read more about the reasons in ADDENDUM 2.
-TOOLPREFIX = avr-
-FLASHTOOL = avrdude
+TOOLPREFIX = arm-none-eabi-
+FLASHTOOL = openocd
 
 # 3. PROJECT LAYOUT
 # =================
@@ -71,6 +71,8 @@ SOURCE_DIR = ../
 BIN_FILE = application.bin
 ELF_FILE = application.elf
 LINKERSCRIPT = ../config/linkerscript.ld
+OPENOCD_CHIPFILE = ../config/openocd_chip.cfg
+OPENOCD_PROBEFILE = ../config/openocd_probe.cfg
 
 # 4. BINARIES
 # ===========
@@ -78,8 +80,7 @@ LINKERSCRIPT = ../config/linkerscript.ld
 BINARIES = \
   $(ELF_FILE) \
   $(ELF_FILE:.elf=.bin) \
-  $(ELF_FILE:.elf=.hex) \
-  $(ELF_FILE:.elf=.eep)
+  $(ELF_FILE:.elf=.hex)
 
 # Define the rules to build these binaries from the .elf file.
 %.bin: %.elf
@@ -88,125 +89,71 @@ BINARIES = \
 	$(info Preparing: $@)
 	$(OBJCOPY) -O binary $< $@
 
-%.hex: %.elf %.eep
+%.hex: %.elf
 	$(info )
 	$(info )
 	$(info Preparing: $@)
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
-
-%.eep: %.elf
-	$(info )
-	$(info )
-	$(info Preparing: $@)
-	$(OBJCOPY) -O ihex \
-             -j .eeprom \
-             --set-section-flags=.eeprom=alloc,load \
-             --no-change-warnings \
-             --change-section-lma .eeprom=0 \
-             $< $@
+	$(OBJCOPY) -O ihex $< $@
 
 # 5. COMPILATION FLAGS
 # ====================
 # CPU specific flags for C++, C and assembly compilation and linking.
-TARGET_COMMONFLAGS = -mmcu=atmega328p \
-                     -flto \
-                     -DF_CPU=16000000L \
-                     -DARDUINO=10813 \
-                     -DARDUINO_ARCH_AVR \
-                     -DARDUINO_AVR_NANO \
+TARGET_COMMONFLAGS = -mcpu=cortex-m3 \
+                     -mfloat-abi=soft \
+                     -mthumb \
+                     -DDEBUG \
 
 # CPU specific C compilation flags
-TARGET_CFLAGS = -std=gnu11 \
-                -fno-fat-lto-objects \
+TARGET_CFLAGS = -DUSE_HAL_DRIVER \
+                -std=gnu11 \
+                -DSTM32F103xB \
+                -DSTM32F1 \
+                -fstack-usage \
 
 # CPU specific C++ compilation flags
-TARGET_CXXFLAGS = -std=gnu++11 \
-                  -fpermissive \
-                  -fno-exceptions \
-                  -fno-threadsafe-statics \
-                  -Wno-error=narrowing \
+TARGET_CXXFLAGS = -DUSE_HAL_DRIVER \
+                  -std=gnu++17 \
+                  -DSTM32F103xB \
+                  -DSTM32F1 \
+                  -fstack-usage \
 
 # CPU specific assembler flags
-TARGET_SFLAGS = -x assembler-with-cpp \
+TARGET_SFLAGS = 
 
 # CPU specific linker flags
-TARGET_LDFLAGS = -fuse-linker-plugin \
+TARGET_LDFLAGS = -static \
+                 --specs=nano.specs \
+                 --specs=nosys.specs \
+                 -u _printf_float \
                  -T $(LINKERSCRIPT) \
                  -L $(dir $(LINKERSCRIPT)) \
 
 # Libraries from the toolchain
-TOOLCHAIN_LDLIBS = -lm \
+TOOLCHAIN_LDLIBS = -lc \
+                   -lm \
 
 # 6. FLASH RULES
 # ==============
-# The 'flash' target flashes the .hex file to the target microcontroller. To
-# achieve this it invokes the 'avrdude' program, pointed to by the FLASHTOOL
-# variable (defined at the top of this file), and provides the right parame-
-# ters to launch avrdude properly.
-#
-# NOTE: To function properly, avrdude needs the 'avrdude.conf' file, which is in-
-#       side the avrdude installation folder. Before avrdude v6.99.0, avrdude was
-#       unable to locate this file by itself. You then had to provide the absolute
-#       path to the file with the '-C' argument, or copy the file to some location
-#       location in your $USER directory. Make sure your avrdude version is higher
-#       than v6.99.0 such that it just works.
-
-# Back to the flash-procedure. The flash-rule defined below launches avrdude
-# and instructs it to flash the firmware through a Serial Port. It will only
-# work if your microcontroller has a bootloader! Arduino boards are shipped with
-# such a bootloader pre-installed. If your chip has no bootloader yet, or it is
-# corrupted, you need to flash it again. Select a probe in the dashboard (eg. AVR
-# ISP mkII or Atmel ICE) to do that.
+# The 'flash' target flashes the binary to the target microcontroller. To
+# achieve this, it invokes the OpenOCD tool:
 .PHONY: flash
 flash: $(BINARIES) print_flash
-	"$(FLASHTOOL)" -v \
-               -patmega328p \
-               -carduino \
-               -P$(FLASH_PORT) \
-               -b115200 \
-               -D \
-               -Uflash:w:$(ELF_FILE:.elf=.hex):i
+	"$(FLASHTOOL)" -f $(OPENOCD_PROBEFILE) \
+               -f $(OPENOCD_CHIPFILE) \
+               -c "program {$(ELF_FILE)} verify reset; shutdown;"
 
-# Let's examine these flags one-by-one:
+# Let's figure out what the flags mean:
 #
-#   -v                  Enable verbose output.
+#   -f: Specify a config file for OpenOCD to use. We pass this flag
+#       twice: once for the config file that defines the probe and
+#       once to define the chip (microcontroller).
 #
-#   -p <partno>         Specify what type of part (MCU) that is connected to
-#                       the programmer.
-#
-#   -c <programmer-id>  Specify the programmer to be used.
-#
-#   -P <port>           Identify the device to which the programmer is attach-
-#                       ed. We use this parameter to define the Flash Port
-#                       (Serial Port), which should be passed on the commandline
-#                       when invoking gnu make.
-#
-#   -b <baudrate>       Override the RS-232 connection baud rate specified in
-#                       the respective programmer's entry of the configuration
-#                       file.
-#
-#   -D                  Disable auto erase for flash.
-#
-#   -e                  Erase chip before programming.
-#
-#
-#   -U <memtype>:<op>:<filename>:<format>   Perform a memory operation.
-#
-#                       <memtype>  specifies the memory type to operate on,
-#                                  such as 'flash', 'eeprom', 'fuse', 'lock',
-#                                  ...
-#
-#                       <op>       specifies what operation to perform, such
-#                                  as 'r' for read, 'w' for write and 'v' for
-#                                  verify.
-#
-#                       <filename> indicates the name of the file to read or
-#                                  write.
-#
-#                       <format>   contains the format of the file to read or
-#                                  write, such as 'i' for Intel Hex, 's' for
-#                                  Motorola S-record, 'r' for raw binary, 'e'
-#                                  for elf and 'a' for autodetect.
+#   -c: Run the specified commands. The ones we pass are:
+#         1) program {file} verify reset;
+#            Upload the firmware to the flash memory and verify
+#            if it was successful.
+#         2) shutdown;
+#            Quit OpenOCD.
 
 
 # ADDENDUM 1. MIT LICENSE
