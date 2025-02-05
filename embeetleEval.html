@@ -23,7 +23,7 @@
         <li>ESP32's are getting to be important, ESP-NOW is great for coordinating special effects, compared to using wires which people can see, break, and can pick up energy and blow up circuits (had a cannon firing off at random, apparently due to a fog machine glitching power).</li>
         <li>Arduino's system for tooling can be mimicked or directly used, it is annoying at times but it works and is supported by a large community.</li>
       </ol>
-      <li>Serial Port selector</li>
+      <li style="background-color: white;"><span style="color: red;">Serial Port selector</span></li>
       <ol>
         <li>on linux(Ubuntu) there are 32 ttyS*'s even though it is extremely rare for those to be actual serial ports these days. We should be able to filter these out, or at least collapse them by prefix, such as collapsing ttyUSB's or ttyACM's (in my case ttyUSB's are FTDI usb-uarts and ttyACM's are microcontrollers with usb builtin and CDC enabled.</li>
       </ol>
@@ -47,7 +47,7 @@
       </ol>
       <li>General</li>
       <ol>
-        <li>'toggleblock comment' does nothing, not from menu nor ctrl-shift-C</li>
+        <li>'toggleblock comment' does nothing, not from menu nor ctrl-shift-C (ctrl-/ is most common across all the IDE's I use)</li>
         <li>"Why the circle icon" does nothing, leaves cursor one file below the one that was clicked on.</li>
         <li>When I put all my source files other than the .ino outside the tree with links to them from inside the tree I get empty file lists. The reasonable criterion of "zip collects all the files needed to reproduce the program" is not invalidated by honoring links. Don't exclude links when scanning for files to compile, don't even check if they are links. The zip utilities I know about require an explicit cli arg to store links as links rather than zipping in the file targeted by the link.</li>
         <li>my gnu make is 4.3, embeetle wants to install 4.2.1, it should not be that picky.</li>
@@ -89,7 +89,8 @@ info@embeetle.com </pre>
           <li>open_ocd download succeeded, config files updated, but Tools and Flashtool are still in red.</li>
           <li>got "std=gnu11' not allowed with 'C++', so for some reason despite files being named C++ embeetle tried a C compile. Also failed to wrap the .ino and compile it leaving unresolved symbols such as <code>main</code>.<br>
             <span style="color: red;">Resolved: is in TARGET_COMMONFLAGS but should be in TARGET_CFLAGS. </span>I moved that and added an std to the c++ section.</li>
-          <li>while editing dashboard.mk for the 'std in wrong place' bug the editor automatically converted leading spaces into leading tabs upon backspace key, a bad idea for makefiles.</li>
+          <li>while editing dashboard.mk for the 'std in wrong place' bug the editor automatically <span
+              style="color: red;">converted leading spaces into leading tabs</span> upon backspace key, a bad idea for makefiles.</li>
           <li>linkerscript:</li>
           <ol>
             <li>there are segments never present for cortexM parts</li>
