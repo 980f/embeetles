@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>uartForm</title>
+  </head>
+  <body>
+    <h2>U(S)ART form</h2>
+    Uart primary configuration
+    <form name="usart" action="" enctype="text/plain"><br>
+      <select name="Mode" id="mode">
+        <option value="UART">Asynch (UART)</option>
+        <option value="USART">Synch master</option>
+        <option value="SmartCard">Smart Card</option>
+        <option value="Multi">Multidrop</option>
+        <option value="Lin">LINbus</option>
+        <option value="MB-rtu">MODBUS-RTU</option>
+        <option value="MB-ascii">MODBUS-ASCII</option>
+      </select>
+      <table>
+        <tbody>
+          <tr>
+            <td>baud rate</td>
+            <td><input max="3000000" name="baudrate" type="number"> </td>
+          </tr>
+          <tr>
+            <td>bits</td>
+            <td><input max="9" min="5" type="number"></td>
+          </tr>
+          <tr>
+            <td>parity</td>
+            <td>
+              <select name="parity" id="parity">
+                <option value="None">None</option>
+                <option value="Even">Even</option>
+                <option value="Odd">Odd</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <tbody>
+          <tr>
+            <td>USE</td>
+            <td>enable</td>
+            <td>Handshake</td>
+            <td>DMA</td>
+          </tr>
+          <tr>
+            <td>TX</td>
+            <td><input id="TX-en" checked="1" type="checkbox"></td>
+            <td><input id="TX-HS" checked="0" type="checkbox"> </td>
+            <td><input id="TX-DMA" checked="0" type="checkbox"> </td>
+          </tr>
+          <tr>
+            <td>RX</td>
+            <td><input id="RX-en" checked="1" type="checkbox"></td>
+            <td><input id="RX-HS" checked="0" type="checkbox"> </td>
+            <td><input id="RX-DMA" checked="0" type="checkbox"><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <hr> The enables can be more subtle. <br>
+      DMA requires the user program the DMA before enabling transmission, so while the bit could be set by the configurator it is an extrememly slight burden to leave that just for code. <br>
+      The counter argument is that there should be a dialog elsewhere for resolving DMA channel usage. That dialog can reach back here or <i>vice versa<br>
+        <br>
+      </i> </form>
+    <table>
+      <tbody>
+        <tr>
+          <th>Signal</th>
+          <th>Pad</th>
+          <th>Pin</th>
+          <th>Description</th>
+          <td>&nbsp;<em>note to embeetle developer</em></td>
+        </tr>
+        <tr>
+          <th>TX</th>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">PA9</option>
+              <option value="alt">PB6</option>
+              <option value="wtf">N/A</option>
+            </select>
+          </td>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">68</option>
+              <option value="alt">74</option>
+              <option value="wtf">N/A</option>
+            </select>
+          </td>
+          <td> Data out. </td>
+          <td>Selecting a pin here enables this feature. </td>
+        </tr>
+        <tr>
+          <th>RX</th>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">PA10</option>
+              <option value="alt">PB7</option>
+              <option value="alt">N/A</option>
+            </select>
+          </td>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">69</option>
+              <option value="alt">75</option>
+            </select>
+          </td>
+          <td> Data in. </td>
+          <td>Selecting a pin here enables this feature. </td>
+        </tr>
+        <tr>
+          <th>HS in</th>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">PA11</option>
+              <option value="alt">PB6</option>
+              <option value="wtf">N/A</option>
+            </select>
+          </td>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">68</option>
+              <option value="alt">74</option>
+              <option value="wtf">N/A</option>
+            </select>
+          </td>
+          <td> Data out enable from the other device. </td>
+          <td>Selecting a pin here enables this feature. </td>
+        </tr>
+        <tr>
+          <th>H Sout</th>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">PA12</option>
+              <option value="alt">PB7</option>
+              <option value="wtf">N/A</option>
+            </select>
+          </td>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">69</option>
+              <option value="alt">75</option>
+            </select>
+          </td>
+          <td> Data in enabled by this device. </td>
+          <td>Selecting a pin here enables this feature. </td>
+        </tr>
+        <tr>
+          <th>CK Sout</th>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">PA13</option>
+              <option value="alt">PB7</option>
+              <option value="wtf">N/A</option>
+            </select>
+          </td>
+          <td>
+            <select name="parity" id="parity">
+              <option value="def">69</option>
+              <option value="alt">75</option>
+            </select>
+          </td>
+          <td> USART clock output. </td>
+          <td>Selecting a pad/pin here enables the feature, <br>
+            disabling conflicting features. </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    This layout combines enabling and alternate pin assignments with "no pin assigned" clearing the 'enable' bit. The table of checkboxes above would not exist.<br>
+    <hr><br>
+    When it is time to get really fancy we can write DMA handling code and have the DMA configuration screen include data allocations for the buffers as well as writing the code to load the DMA control registers and set the enables in the peripherals that have such.
+  </body>
+</html>
