@@ -7,15 +7,16 @@
   <body>
     <h2>Embeetle evaluation</h2>
     <p>Starting with Arduino import is probably the most pessimistic evaluation possible!<br>
-      This eval started with 1.13.0, the debugger stuff was with 1.13.1</p>
+      This eval started with 1.13.0, the debugger stuff was with 1.13.1<br>
+      Things in Red are more noticeable, but some of the stuff in plain text is still buggy or a rough point.</p>
     <ol>
       <li>Arduino import issues</li>
       <ol>
         <li>reified links, disrupting my system for sharing source files between sketches. This can be a non-issue if sharing is easy to establish with beetles.</li>
         <li>Did not connect to hardware tools includes, <code>Arduino.h</code> not found, <code>Wire.h</code> not found when compiling files other than the <code>.ino</code>.</li>
         <li>Copied extra files, which was explained to me as "better to copy unneeded stuff than leave needed stuff out". I will share my understanding of the Arduino build with them, there should not be any uncertainty.</li>
-        <li>did crlf conversion, that should be conditional as the files might be shared with a system that needs them.</li>
-        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect.Separate Inc and Src directories is a legacy of closed source development, a reflection of 'public' and 'private' concepts for source files.</li>
+        <li>did crlf conversion, that should be conditional as the files might be shared with a system that needs them (there is some chance some other tool did this and I only became aware during the import, shared repo).</li>
+        <li>separate base and <code>source</code> directory seems unnecessary, adding extra folder levels is not convenient for me and doesn't add anything of value that I can detect. Having separate Inc and Src directories is a legacy of closed source development, a reflection of 'public' and 'private' concepts for source files, and simple minded distribution packaging. </li>
       </ol>
       <li>Devices</li>
       <ol>
@@ -103,7 +104,8 @@ info@embeetle.com </pre>
         <li>New project </li>
         <ol>
           <li>with just one project template it was not obvious that I needed to click somewhere on the line in the table. Autopicking if there is only one is reasonable, having a column just for clicking also works.</li>
-          <li>main.c was under Src under Core under Source, when I would have expected it to be at Source. I will be generating my own template as every time I have used ST stuff I have found bugs, often serious ones. I also write c++ and find the verbosity of the HAL rather stultifying compared to how simple a c++ hal would be.</li>
+          <li>main.c was under Src under Core under Source, when I would have expected it to be at Source. I will be generating my own template as every time I have used ST stuff I have found bugs, often serious ones. I also write c++ and find the verbosity of the HAL rather stultifying compared to how simple a c++ hal would be.<br>
+            On further contemplation, the Arduino idea of the body of the 'main file' being in a different file might be worth retaining, for HAL users. Don't let your friends be HAL users, and CMSIS isn't much better.</li>
           <li>template folder has files for all base types of cortexM, rather than being filtered for the processor selected. </li>
           <li>I haven't tried CMSIS since v3 where it couldn't even get uart baud rate correct. Somebody read the bizarre description of the "fractional baud rate generator" instead of paying attention only to the algebra for setting the register, and got some decimal logic mixed in with something that is purely binary.</li>
           <li>I will be emptying most of the project out, but it is nice having a makefile to start with.<br>
@@ -129,27 +131,28 @@ info@embeetle.com </pre>
           </ol>
           <li>t'would be nice to have a filter by architecture</li>
         </ol>
-        <li>"Update available" balloon notifying of v1.13.1 launched page with vacuous 1.10 release notes.</li>
+        <li>"Update available" balloon notifying of v1.13.1 <span style="color: #6633ff;">launched page with vacuous 1.10 release notes</span>.</li>
         <li>I do like that you do not hide things like the updater execution.</li>
         <li>debugging</li>
         <ol>
           <li>ergonomics: function keys for step in/out/over etc. are essential, the debug toolbar is nowhere near the source file cursor so my eyes had to swing back and forth to make sure I was hitting the correct icon according to which line I was sitting on. </li>
           <li>read-only on the source file: This is a big problem, and I've dealt with more than a few IDE's over the years that try this. <span
-              style="color: red;">IT IS A DEAL BREAKER!</span> I understand the reasons for it but absolutely need to be able to opt-out of it to make the debug session useful. I need to fix things or annotate the fixes as I find things, and I understand and accept that I can easily break the correlation between the source file and the debug info. I can deal with occasional loss of correlation between source and debug info a heckuva lot better than I can try to make notes of what to change once I drop out of debug mode.Even having to acknowledge overriding the read-only every debug session rapidly became infuriating, it felt like I was banging my shins each time I tried to take a step forward.<br>
+              style="color: red;">IT IS A DEAL BREAKER!</span> I understand the reasons for it but absolutely need to be able to opt-out of it to make the debug session useful. I need to fix things or annotate the fixes as I find things, and I understand and accept that I can easily break the correlation between the source file and the debug info. I can deal with occasional loss of correlation between source and debug info a heckuva lot better than I can try to make notes of what to change once I drop out of debug mode.Even having to acknowledge overriding the read-only every debug session rapidly became infuriating, it felt like I was banging my shins each time I tried to take a step forward (Keil or some other German IDE whose name escapes me at the moment).<br>
             <span style="color: red;">So, since you are already popping up a notification that you are ignoring edits due to debug being active, you can pop up a dialog which offers per project or global permission to not slap me in the face while I am trying to get the hardest part of software engineering work done.</span></li>
-          <li>I tried to restart debugging after making a fix and rather than pushing or automatically building and flashing you note that the source would be out of sync. I would make DEBUG a make target.</li>
+          <li>I tried to restart debugging after making a fix and rather than pushing or automatically building and flashing you note that the source would be out of sync. I would make DEBUG a make target depending upon build and flash.</li>
           <li>Having to have debug running to set breakpoints is very annoying. I like to set them before starting the debug session.</li>
           <li>It seems that the processor must be paused for the IDE to acknowledge a breakpoint has been set. </li>
           <li>The IDE can flash the line of code where the breakpoint is when I click on the breakpoint definition, but doesn't reliably have the icon in the gutter/margin.</li>
           <li>Debug session is stuck on the "Not flashed" error notification. Closing the window didn't make that go away, and the window came back in a different part of the screen than it was last opened. See next item. Reconnecting the debugger cleared the error, but it should be cleared when the window is reopened, or when I do flash the part. The lingering error message caused me time poking around wondering what else I needed to do to make the debug page willing to do what I want. Uh, the error message still lingers, it just hid for a little bit.<br>
             <strong>LATER</strong>: <em>actually the flashing was failing but since it always falsely reports failure when the final target reset doesn't work I wasn't seeing it. I have to stroke the hardware reset at just the right time to get the device to flash, that should not be necessary with a SWD debug connection. See next item. </em>The success of the actual download and verify should be somehow detected, and you shouldn't trust just the exec's return value since openOCD scripting can execute other actions after the download and not all matter.<em><br>
-            </em></li>
+              <span style="color: red;">AHA!</span></em><span style="color: red;"> the default openocd scripting for flashing includes 'reset' and that can be dropped to get embeetle to be willing to connect (Kristof figured that out). <br>
+              In general failures such as this should perhaps launch a warning dialog that has an option to reset the error state, to pretend that the error did not occur, rather than to not attempt something that might actually work.</span></li>
           <li>Often the debug probe will not have a direct hardware reset connection to the processor. SWD seems to have access so long as its pins haven't been taken over by the application, and you can reset STM32's via the AIRC register, see next item.</li>
           <li>Potential feature: the stm32 family (at least all the ones I have used or considered using) have a memory mapped register (AIRC) that has a bit in it which generates a physical hardware reset, some of them actually drive their hardware reset pin low. Not all debug probes are connected to the physical reset, this facility of ST's allows you to do hard resets via memory access.Being able to configure that and pass it on somehow to the flashing tool would help tremendously. OpenOCD is open source ... and I guess you are using a different implementation language as integrating its source into your app rather than launching and talking over a socket seems like it would lead to much better behavior, perhaps totally bypassing the need for gdb.</li>
-          <li>The Debug window needs to not share the source code editor frame. If I move it to a different tile group it should reopen in that group not go back to the original rather anti-egonomic position of not letting you see the source that you are debugging.</li>
+          <li>The Debug window needs to not share the source code editor frame. If I move it to a different tile group it should reopen in that group not go back to the original rather anti-egonomic position of not letting you see the source that you are debugging. In general: if the user has changed which frame a view is in you should remember that, probably globally but even just in a project file that can be readily copied to other projects would be good.</li>
           <li>My breakpoints were lost due to an edit which only changed some function call values. That is unkind. A best effort of keeping the breakpoint with the lines is worth it, minor imperfections would be more tolerable than having to redo the breakpoints before each session. </li>
           <li>Breakpoint setting does not reliably produce an icon in the gutter. I clicked 3 times and saw nothing, checked the breakpoint listing in the debug tab and saw 3 breakpoints on the same line. Deduping breakpoints makes a lot of sense. Getting the state indicator right would also be very good.</li>
-          <li>General register view</li>
+          <li>General register view&nbsp; (grouping per SVD should fix most of this)</li>
           <ol>
             <li>d0,d1,d10,d11, ...d19, d2, d3 ... need I detail why that is annoying?</li>
             <li>The FP registers are mixed in with the CPU and special control registers</li>
