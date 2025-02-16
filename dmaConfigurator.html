@@ -5,8 +5,8 @@
     <title>dmaConfigurator</title>
   </head>
   <body>
-    <p>DMA configuration<br>
-      Examples from SMT32 products but generally applicable</p>
+    <h3>DMA configuration</h3>
+    <p> Examples from SMT32 products but generally applicable</p>
     <p>For each peripheral that streams data or exchanges packets DMA can be handy.</p>
     <p>The configuration should include buffer allocation.<br>
       Buffer allocation should include linker segment override capability. This is due to some chips have different RAM sections, some intended for DMA, some unavailable for DMA (Cortex <strong>C</strong>losely <strong>C</strong>oupled <strong>M</strong>emory is sometimes cpu-only).<br>

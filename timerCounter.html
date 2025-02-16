@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Timer/Counter Configurator</title>
+  </head>
+  <body>
+    <h3>Timer configuration</h3>
+    <br>
+    <form>
+      <table>
+        <tbody>
+          <tr>
+            <td><br>
+            </td>
+            <td><br>
+            </td>
+            <td>Tool tip/help text/comments</td>
+          </tr>
+          <tr>
+            <td>Input or output?</td>
+            <td>
+              <select name="toplevel">
+                <option value="generator">generator</option>
+                <option value="detector">detector</option>
+              </select>
+            </td>
+            <td>timers either measure some input signal or generates an output signal. Sometimes an output generator uses a pin as an input clock.</td>
+          </tr>
+          <tr>
+            <td colspan="2"> If generator:</td>
+            <td><br>
+            </td>
+          </tr>
+          <tr>
+            <td>Main function</td>
+            <td>
+              <select name="major mode">
+                <option label="one shot" value="1">Single pulse</option>
+                <option label="periodic" value="1">PWM</option>
+                <option label="" value="1"></option>
+              </select>
+            </td>
+            <td><br>
+            </td>
+          </tr>
+          <tr>
+            <td>base rate</td>
+            <td><input type="number"></td>
+            <td>User enters a frequency, which is mixed with the related input clock which is configured either here or on a clock controller dialog. Doing it here is better, via a "clock source" field, this guy is used to set a prescalar value.</td>
+          </tr>
+          <tr>
+            <td colspan="2">If PWM:</td>
+            <td><br>
+            </td>
+          </tr>
+          <tr>
+            <td>Alignment</td>
+            <td>
+              <select>
+                <option>Center</option>
+                <option>Early</option>
+                <option>Late</option>
+              </select>
+            </td>
+            <td>Active from the start, active after a delay, up/down count and toggle early vs late in synch, i.e. up and late then switch to down and early.</td>
+          </tr>
+          <tr>
+            <td>period</td>
+            <td><input name="pwm period" value="100" type="number"><br>
+            </td>
+            <td>sets cyclelength, the rate at which the counter is reloaded when it reaches its terminal value.</td>
+          </tr>
+          <tr>
+            <td>duty cycle</td>
+            <td><input name="active" value="66" type="number"><br>
+            </td>
+            <td>sets delay to change from active to inactive</td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="2">If PWM with DMA reload</td>
+            <td><br>
+            </td>
+          </tr>
+          <tr>
+            <td>Buffer ...</td>
+            <td>see<a href="dmaConfigurator.html" title="DMA configuration"> DMA dialog</a></td>
+            <td><br>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Detectors</td>
+            <td><br>
+            </td>
+          </tr>
+          <tr>
+            <td>Style</td>
+            <td>
+              <select>
+                <option>Event counter</option>
+                <option>Pulse width measurement</option>
+                <option>Pulse frequency measurement</option>
+                <option>Quadrature Decoder</option>
+                <option>Divider</option>
+              </select>
+            </td>
+            <td><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <hr> There are many other conditionally present items, such as motor drivers having complementary outputs with deadtime controls on them. The concepts really are universal, while I take all my examples from stm32 family that is because I have shipped produces with them.&nbsp; <br>
+      <cite>I have also shipped products with 8051 derivatives in them, but I'd rather keep that part of my past secret. </cite></form>
+  </body>
+</html>
