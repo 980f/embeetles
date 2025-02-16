@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>embeetle thoughts</title>
+  </head>
+  <body>
+    <p>Thoughts on Embeetle</p>
+    <p>The configurator program should have multiple backends, generating code for each commercially identifiable "framework".</p>
+    <p>It is a graphical HAL.</p>
+    One backend, call it the embeetle backend, would be an abstract HAL (intentionally redudant). The abstract HAL would have concepts such as "one shot", "periodic timer", "pwm", and a compiler to produce vendor specific snippets of HAL calls to implement such concepts.This is actually a "later" task, it is user centric rather than vendor centric and vendor buy-in is the immediate need.<br>
+    <br>
+    For&nbsp; the STM32 HAL backend one should be able to write a parser for the output of Cube MX to work back to what the user selected. One can easily figure out GPIO pins, and from the ones with AF settings the peripheral operating mode. While ST has many hundreds of parts that actually only have a dozen or two peripherals.<br>
+    BTW: the STM32 HAL is not a bad idea, just poorly implemented due to using C rather than C++ as the language. With C++ the HAL API would be abstract base classes, with concrete classes for the runtime code. That is what I am writing for myself in my cortexm repo.<br>
+    <br>
+    <hr><br>
+    Users should be able to create their own abstract concepts and HAL generator/parser, or at least vendors should have a reasonable stab at it.<br>
+    One might investigate some FPGA tools to get a library listing of common logic blocks to implement. Perhaps there is a university EE department library of VHDL or Verilog code that could be mined for a list of such modules.<br>
+    <hr><br>
+    -ffreestanding invokes -fno-builtins<br>
+    <br>
+    <br>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>c++hal</title>
+  </head>
+  <body>
+    <p>c++ HAL </p>
+    <p>On a "Blink" example program a cubeMX+HAL implementation used 16808 bytes of rom and consumed 100% of processor time in delay() functions.<br>
+      The c++ HAL uses 1.9k and is driven by the systick timer leaving the processor sleeping &gt;99% of the time.</p>
+    <p>While the Hal example could also use the systick timer interrupt service routine to sleep during 'delay' it doesn't, and C is just not nearly as friendly at code reuse as C++ is.</p>
+    <p><br>
+      The overall HAL structure uses carefully crafted structs to match hardware register layout within a peripheral. For devices like GPIO this results in manually named sections for each pin. The c++ HAL uses address generator expressions which take in the values printed in the manual for address offsets, and can use the pin number in mask generation to pick out a field therein. This gets rid of the need for careful layout of a struct, and for remembering to use the "packed" attribute to make the compiler allocate bits exactly as told. </p>
+    <p>Many of the registers take special handling, and it is often reasonable to have a function for generating the pattern required from the values natural to the application. The HAL does this via structs of the natural values which are mated with a function that maps them to register settings. The author of the c++ hal has found that most registers only appeared in one such function, so the architecture of a locally generated reference to an integer takes less code in every respect than having the struct and managing its base address.</p>
+    <p>Done well the compiler is able to inline code in both architectures to get similar runtime performance at the point of setting a register, but the C++ version is easier to write and maintain, when writing the translation from natural value to register value one should be looking at the reference manual page for the register, and its address is right there in the text, no need to figure out what text somebody decided to use for the struct field, the mnemonics in the manual are abysmal, being truncated per inscrutable rules and as if we still were writing asm code with a 6 char limit on symbol names.</p>
+    <p><br>
+    </p>
+  </body>
+</html>

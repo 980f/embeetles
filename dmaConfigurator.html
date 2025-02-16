@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>dmaConfigurator</title>
+  </head>
+  <body>
+    <p>DMA configuration<br>
+      Examples from SMT32 products but generally applicable</p>
+    <p>For each peripheral that streams data or exchanges packets DMA can be handy.</p>
+    <p>The configuration should include buffer allocation.<br>
+      Buffer allocation should include linker segment override capability. This is due to some chips have different RAM sections, some intended for DMA, some unavailable for DMA (Cortex <strong>C</strong>losely <strong>C</strong>oupled <strong>M</strong>emory is sometimes cpu-only).<br>
+      So for each transfer direction:</p>
+    <table border="1">
+      <tbody>
+        <tr>
+          <td>buffer name</td>
+          <td><input name="bufferName" value="&lt;buffer&gt;" type="text"> </td>
+        </tr>
+        <tr>
+          <td>linker segment</td>
+          <td><input name="segmentName" value="&lt;data&gt;" type="text"> </td>
+        </tr>
+        <tr>
+          <td>number of bytes</td>
+          <td> <input name="bytes" value="&lt;256&gt;" type="number"> </td>
+        </tr>
+        <tr>
+          <td>transfer unit</td>
+          <td>
+            <select name="dmaItemWidth" required="required" list="1,2,4">
+              <option value="1">1/8 bits</option>
+              <option value="2">2/16 bits</option>
+              <option value="4">4/32 bits</option>
+            </select>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>options<br>
+          </td>
+          <td>like interrupt at half.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    The direction bits for the DMA controller are inferred from the dialog being in the context of a peripheral and whether the receive or transmit is being configured.<br>
+    <br>
+    If the linker segment is not the default then a chunk of linker script should be created with instructions on where to insert it in the user's linker script. Which brings up the totally new topic of linker script generation.<br>
+    <br>
+    <hr>Memory to Memory DMA is its own thing.<br>
+    <br>
+    It is used for buffer copies, and to the degree that it makes sense to have a static definition of such a transfer one can have a dialog with two copies of the peripheral DMA buffer gui components clearly labled "To" and "From".<br>
+    <br>
+    <br>
+  </body>
+</html>

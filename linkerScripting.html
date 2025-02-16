@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>linkerScripting</title>
+  </head>
+  <body>
+    <h3>Linker script generation.</h3>
+    <p><em>&lt;rant&gt;</em>IDE vendors tend to deliver a linker script that covers every type of processor in every usage mode, including pieces that only make sense for a host system, not an MCU<em>&lt;/rant&gt;</em><br>
+      In the case of ARM arm7 and arm9 linker bits are present in scripts for CortexM parts. CortexM parts do not have FIQ and do not do thumb/arm interworking.</p>
+    <p>So, on to what a CortexM linker script should be:</p>
+    <p>A description of each memory block in the device, ROM, RAM, and at least for CortexM the 0x40000000 Peripherals space.<br>
+      There are often two ROM's, built-in flash and XIP, and multiple RAM's, a main block for all usages and block intended for DMA buffers, and in some cases what is effectively user managed cache of instructions.</p>
+    <p>The compiler generates many segments, and for maximal memory management gcc needs "function segments" enabled so that the linker can prune unused functions from the link. Some HAL's have a file of stubs for low level host functions such as "getpid", but those should be allowed to generate linker errors, I suspect they exist due to not providing function segments in the library builds.</p>
+    <p>Segments get assigned to memory blocks via lines of linker script.</p>
+    <p>I personally create tables whose content crosses modules that I would prefer not have knowledge of each other. Originally I built linked lists via constructors and a link field added to objects that were to be statically assigned to a list (lower speed timer activities) but that takes ram both for the link and otherwise const objects having to go into ram in order to support that link, and startup time of the application. I make tables of const pointers to non-const objects, or tables of fully const objects via c++ attributes on their declaration following a pattern for which I have a wildcard segment declaration in my linker script. Developer trick: if you have a mutable field in a class then the whole of the class goes into RAM. If part of the class is constants set at construction then make the class consist of those constant fields and a reference to a distinct class of the mutable parts. That lets the constants go into ROM and the RAM to have only those things that need to be ram.&nbsp; If you name the mutable instance '<code>m</code>' then access looks like <code>myObject.m.count</code>, not far from the heinous habit of prefixing all member of a class with '<code>m_</code>'.</p>
+    <p>Under compilation configuration (you do realize that should be part of the configurator, right ?;) disabling exceptions should result in the related segments not appearing in the linker script.&nbsp; They are noise that it would be nice to not have to read around when trying to figure out linker issues.</p>
+    <hr>
+    <h3>Interactions with the rest of the configurator program</h3>
+    <p><br>
+      DMA buffer description should offer RAM segment declarations. For most links 'bss.buffername' would be a reasonable forced naming convention, with alignment directives per the transfer size. The most important part is letting the user select the memory block, for the case when there are disjoint blocks of ram.<br>
+      <br>
+      DMA buffer description should also offer ROM segment declarations, although that is going to be quite rare. You could cover this by recognizing when the user has entered "rodata" for the segment and not create RAM segments. This allows sending a static preamble without first copying it into RAM.</p>
+    <p><br>
+    </p>
+  </body>
+</html>

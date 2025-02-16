@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>overview</title>
+  </head>
+  <body>
+    <h3>Overview of the Configurator</h3>
+    <p>The UI of the configurator implicitly defines a HAL. Embeetles can create a higher level of abstraction that covers most MCU programming, and then have backends to generate code for each specific HAL. </p>
+    <p>On the syntactic forms of the EHAL structures I would like "C++classes" as one option, with a top level class rooting a tree of classes. I would then write a program that derives from those classes to generate code.<br>
+      Of course y'all would write a python program with the same class structure, and java and kotlin are other reasonable choices.<br>
+      <br>
+      While xml and json might make some people happy, why not output something that is ready to use as is in a program?</p>
+    <hr>An alternative is to make the Configurator an extensible by the customer program where the customer can tack on python chunks to each UI field, to propagate changes to the DOM that is the configuration.<br>
+    <br>
+    I personally would prefer to not be mucking around inside or even on the periphery of someone else's code, but would be content with the DOM having some unresolved conflicts in it, conflicts that I take care of in my post processor extension to it.<br>
+    <p><br>
+    </p>
+  </body>
+</html>
